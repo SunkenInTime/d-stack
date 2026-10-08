@@ -1,0 +1,223 @@
+<!doctype html>
+<!--
+  Mock comparison page. One static file, no network.
+
+  Contract:
+    <title>                       page title, also the localStorage key for control state.
+    <template id="shared-head">   goes into the <head> of every mock: tokens, base styles,
+                                  font <link>s, shared <script>s. Scripts here run inside
+                                  each mock's iframe, never in this page.
+    <template class="mock">       one per mock, in display order. Its innerHTML becomes the
+                                  <body> of an isolated iframe. Attributes:
+        data-name    short label, shown in the card header.
+        data-note    one sentence: what changed relative to Baseline and why.
+        data-height  optional fixed height in px (default: grows to fit content).
+    The first mock is Baseline: the current UI reproduced as-is.
+
+  Theme: the toggle sets data-theme="light|dark" AND class="dark" on each mock's <html>,
+  plus color-scheme. Write shared CSS against whichever the project already uses.
+
+  Controls: columns, viewport width (mocks scale down to fit their cell), theme.
+  Click a card title or press 1-9 to focus one mock; Esc returns to the grid.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mocks</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #ececec; --card: #fff; --line: #d9d9d9; --ink: #1a1a1a; --muted: #6b6b6b;
+    --chip: #f3f3f3; --chip-on: #1a1a1a; --chip-on-ink: #fff; --accent: #2f6df6;
+    --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #161616; --card: #1f1f1f; --line: #333; --ink: #ececec; --muted: #9a9a9a;
+      --chip: #2a2a2a; --chip-on: #ececec; --chip-on-ink: #161616;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 13px/1.4 var(--sans); }
+
+  header {
+    position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 20px;
+    padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--line);
+  }
+  header h1 { margin: 0; font-size: 14px; font-weight: 600; }
+  header h1 small { color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .group { display: flex; align-items: center; gap: 4px; }
+  .group > span { color: var(--muted); margin-right: 4px; }
+  .chip {
+    font: inherit; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--chip); color: var(--ink); cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--chip-on); color: var(--chip-on-ink); border-color: var(--chip-on); }
+  .spacer { flex: 1; }
+  kbd { font: 11px var(--mono); color: var(--muted); }
+
+  main { display: grid; align-items: start; gap: 16px; padding: 16px; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); }
+  main.focus { grid-template-columns: 1fr; }
+  main.focus .card:not(.focused) { display: none; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; min-width: 0; }
+  .card-head { display: flex; align-items: baseline; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .card-head .n { font: 11px var(--mono); color: var(--muted); }
+  .card-head h2 { margin: 0; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .card-head h2:hover { color: var(--accent); }
+  .card-head p { margin: 0; color: var(--muted); flex: 1; min-width: 0; }
+  .card-head .w { font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
+
+  .stage { position: relative; overflow: hidden; background: repeating-conic-gradient(var(--line) 0 25%, transparent 0 50%) 0 0 / 16px 16px; }
+  .stage iframe { display: block; border: 0; background: #fff; transform-origin: top left; }
+</style>
+</head>
+<body>
+
+<template id="shared-head">
+  <style>
+    /* Project tokens and base styles go here. */
+    html { color-scheme: light; }
+    html.dark { color-scheme: dark; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; }
+  </style>
+</template>
+
+<!-- Mocks. First one is Baseline. -->
+<template class="mock" data-name="Baseline" data-note="Current UI, reproduced as-is.">
+  <div style="padding:24px">Baseline goes here.</div>
+</template>
+
+<template class="mock" data-name="Variant A" data-note="What changed and why.">
+  <div style="padding:24px">Variant A goes here.</div>
+</template>
+
+<header>
+  <h1 id="title"></h1>
+  <div class="group" data-ctl="cols"><span>Columns</span></div>
+  <div class="group" data-ctl="width"><span>Width</span></div>
+  <div class="group" data-ctl="theme"><span>Theme</span></div>
+  <div class="spacer"></div>
+  <kbd>1-9 focus · Esc grid</kbd>
+</header>
+<main id="grid"></main>
+
+<script>
+(() => {
+  const OPTS = {
+    cols:  [['1','1'],['2','2'],['3','3'],['4','4']],
+    width: [['fit','Fit'],['375','375'],['768','768'],['1024','1024'],['1440','1440']],
+    theme: [['light','Light'],['dark','Dark']],
+  };
+  const key = 'mocks:' + document.title;
+  const state = Object.assign({ cols: '2', width: 'fit', theme: 'light', focus: null },
+    JSON.parse(localStorage.getItem(key) || '{}'));
+  const save = () => localStorage.setItem(key, JSON.stringify(state));
+
+  const sharedHead = document.getElementById('shared-head').innerHTML;
+  const grid = document.getElementById('grid');
+  const cards = [];
+
+  document.querySelectorAll('template.mock').forEach((tpl, i) => {
+    const card = document.createElement('section');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-head">
+        <span class="n">${i + 1}</span>
+        <h2 title="Focus">${tpl.dataset.name || 'Mock ' + (i + 1)}</h2>
+        <p>${tpl.dataset.note || ''}</p>
+        <span class="w"></span>
+      </div>
+      <div class="stage"><iframe title="${tpl.dataset.name || ''}"></iframe></div>`;
+    const iframe = card.querySelector('iframe');
+    iframe.srcdoc = `<!doctype html><html><head><meta charset="utf-8">${sharedHead}</head><body>${tpl.innerHTML}</body></html>`;
+    card.querySelector('h2').onclick = () => setFocus(state.focus === i ? null : i);
+    const entry = { card, iframe, fixedH: Number(tpl.dataset.height) || 0, contentH: 0 };
+    iframe.addEventListener('load', () => {
+      applyTheme(entry);
+      const doc = iframe.contentDocument;
+      const measure = () => {
+        entry.contentH = Math.ceil(doc.documentElement.getBoundingClientRect().height);
+        layout(entry);
+      };
+      new iframe.contentWindow.ResizeObserver(measure).observe(doc.documentElement);
+      if (doc.body) new iframe.contentWindow.ResizeObserver(measure).observe(doc.body);
+      measure();
+    });
+    cards.push(entry);
+    grid.appendChild(card);
+  });
+
+  document.getElementById('title').innerHTML = `${document.title}<small>${cards.length} mocks</small>`;
+
+  function applyTheme({ iframe }) {
+    const doc = iframe.contentDocument;
+    if (!doc || !doc.documentElement) return;
+    const dark = state.theme === 'dark';
+    doc.documentElement.dataset.theme = state.theme;
+    doc.documentElement.classList.toggle('dark', dark);
+    doc.documentElement.style.colorScheme = state.theme;
+  }
+
+  function layout(entry) {
+    const { card, iframe } = entry;
+    const stage = card.querySelector('.stage');
+    const avail = stage.clientWidth || card.clientWidth;
+    const w = state.width === 'fit' ? avail : Number(state.width);
+    const scale = Math.min(1, avail / w);
+    const h = entry.fixedH || Math.max(entry.contentH, 80);
+    iframe.style.width = w + 'px';
+    iframe.style.height = h + 'px';
+    iframe.style.transform = scale < 1 ? `scale(${scale})` : '';
+    stage.style.height = Math.round(h * scale) + 'px';
+    card.querySelector('.w').textContent = state.width === 'fit' ? `${Math.round(avail)}px` : `${w}px · ${Math.round(scale * 100)}%`;
+  }
+
+  function render() {
+    grid.style.setProperty('--cols', state.cols);
+    grid.classList.toggle('focus', state.focus !== null);
+    cards.forEach((c, i) => c.card.classList.toggle('focused', state.focus === i));
+    for (const ctl of document.querySelectorAll('[data-ctl]')) {
+      const name = ctl.dataset.ctl;
+      ctl.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === state[name])));
+    }
+    cards.forEach(applyTheme);
+    requestAnimationFrame(() => cards.forEach(layout));
+    save();
+  }
+
+  function setFocus(i) {
+    state.focus = i;
+    location.hash = i === null ? '' : String(i + 1);
+    render();
+    if (i !== null) window.scrollTo(0, 0);
+  }
+
+  for (const ctl of document.querySelectorAll('[data-ctl]')) {
+    const name = ctl.dataset.ctl;
+    for (const [v, label] of OPTS[name]) {
+      const b = document.createElement('button');
+      b.className = 'chip'; b.dataset.v = v; b.textContent = label;
+      b.onclick = () => { state[name] = v; render(); };
+      ctl.appendChild(b);
+    }
+  }
+
+  window.addEventListener('keydown', e => {
+    if (e.target.closest?.('input, textarea, select, [contenteditable]')) return;
+    if (e.key === 'Escape') setFocus(null);
+    const n = Number(e.key);
+    if (n >= 1 && n <= cards.length) setFocus(n - 1);
+  });
+  window.addEventListener('resize', () => cards.forEach(layout));
+
+  const hash = Number(location.hash.slice(1));
+  if (hash >= 1 && hash <= cards.length) state.focus = hash - 1;
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Mock"
+  short_description: "Compare interactive UI mocks side by side on one static page"
