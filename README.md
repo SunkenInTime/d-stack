@@ -1,4 +1,4 @@
-# software-factory (placeholder name)
+# d-stack
 
 How I run coding agents day to day. Two models split the work. Claude writes the code and makes the design calls. Astra (a Codex model) reviews, debugs, and checks things visually. Everything here is a snapshot of my live config, copied as-is.
 
@@ -10,6 +10,8 @@ How I run coding agents day to day. Two models split the work. Claude writes the
   - `unslop`: strips AI tells from writing. Applied to everything, PR descriptions included.
   - `writing-for-agents`: how to write skills and AGENTS.md files.
   - `mock`: side-by-side UI variants on one static page, each changing one thing.
+  - `dara-pr-making-rules`: how a change becomes a PR, from first repro to merged: ground truth by what the user meets, a before/after lede, Astra review, then seeing CI through. Its attachment guide uploads through an `upload-to-r2` skill that isn't included here; swap in your own file host.
+  - `astra-loop`: settles a contested design or decision by going rounds with a second model until they converge.
 
 The `agents/openai.yaml` files are Codex metadata. Claude Code ignores them.
 
