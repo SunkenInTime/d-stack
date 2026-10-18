@@ -15,10 +15,11 @@ How I run coding agents day to day. Two models split the work. Claude writes the
 
 The `agents/openai.yaml` files are Codex metadata. Claude Code ignores them.
 
-## Install
+## Using it
 
-Copy `AGENTS.md` and `CLAUDE.md` into `~/.claude/` (or `~/.codex/AGENTS.md` for Codex), and copy the skill folders into `~/.claude/skills/` or `~/.codex/skills/`. Some details are mine: the drive layout in AGENTS.md, the T3 Code `delegate_task` calls, and the `gpt-6-astra` model name. Swap in your own.
+Treat this as a reference, not something to copy one-for-one. It's tuned to how I work, and your workflow will be different. Take the ideas that fit and write them in your own words. Plenty of it only makes sense on my machine: the drive layout in AGENTS.md, the T3 Code `delegate_task` calls, and the `gpt-6-astra` model name.
 
 ## Credits
 
-`writing-for-agents` is unchanged from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, license in `skills/THIRD_PARTY_LICENSE_mattpocock.txt`).
+- `writing-for-agents` is unchanged from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, license in `skills/THIRD_PARTY_LICENSE_mattpocock.txt`).
+- `unslop` is adapted from [poteto/noodle](https://github.com/poteto/noodle) by Lauren Tan (MIT, license in `skills/THIRD_PARTY_LICENSE_poteto.txt`).
