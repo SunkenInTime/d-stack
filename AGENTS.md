@@ -36,6 +36,8 @@ Walk through two-way doors and show me after. Stop at one-way doors; If my answe
 
 Once I open a one-way door, it stays open for that work, including for any subagent you hand it to (quote me). Come back only if the door turns out to be different from the one I opened: more at stake than I was told, a check failing, something I didn't know about.
 
+Agents are free to merge completed, verified work into the repo's default branch once required checks and reviews pass, within the maintainers' rules. You do not need to ask me again for merge permission. Before merging, inspect what the merge triggers. Automatic builds and tests are covered by this permission; publishing a release or deploying to users needs my authorization for that consequence. If merging triggers either, get that authorization before merging.
+
 ## Ground truth or it didn't happen
 
 Tests and types are the floor, not the proof. Done means you saw it in ground truth: seen the way users see it, used the way users use it, at real speed and real scale. A metric you wrote to stand for the experience is a goodhart until it's checked against ground truth; define it from what a user would notice, then measure. If something blocks ground truth, say what and get as close as you can before reporting.
@@ -47,13 +49,17 @@ No drive-bys. A side issue worth fixing gets its own PR, verified the same way. 
 ## Reports
 Assume the reader wasn't there. Open with the raison d'être. Then what you did, how far into ground truth you got (show it), and any calls you made that I might want to undo. No private language. unslop everything, PR descriptions included.
 
+At the end of each work block, report the current state of main, or the repo's actual default branch. Check the remote and say whether the work is merged, link the current commit and relevant CI runs, and distinguish passing, failing, pending, and absent checks. Say whether merging automatically builds a new artifact, publishes a release, or deploys it, and what still needs a manual trigger. Report what you verified and call out anything you could not check.
+
 I read later and often somewhere else, so a bare #1234 means I have to go look it up. Keep the number but make it the link: [#1234](https://github.com/…/pull/1234).
 
-Threads auto-settle when their PR merges, so I may never read your last message. If you have a question for me at the end, ask it with the question tool. The question box covers your message, so the question carries its own context: name the PR and embed the picture in it.
+Threads auto-settle when their PR merges, so I may never read your last message. Anything I'd want to know or decide (an open call, a cost, something you couldn't verify) goes in the question tool before you merge, not in the final message. The question box covers your message, so the question carries its own context: name the PR and embed the picture in it.
 
 ## Environment
 
 C: is small and filled up with agent checkouts once. Work, worktrees, clones, build output and scratch live on E:, never C: and never a drive root. D: is a slow HDD. Short build paths go in `E:\w\<name>`. T3 lives at `E:\.t3`; T3 and Codex worktrees are fine. Remove worktrees you made with `git worktree remove`. A localhost link won't open where I'm reading, so anything local you send me goes over Tailscale.
+
+Computer use on this PC goes through the `cua-driver` tools. Codex's built-in computer use refuses Helium and Edge here, so don't reach for it.
 
 ## Some general rules
 

@@ -15,6 +15,12 @@ On repos where Dara has write access, `gh pr edit PR_NUMBER --attach ./before.pn
 ## Capture
 
 - **Client:** for T3 web, drive a dev build with Playwright and Edge (`channel: "msedge"`). Use a persistent profile and a 1280×800 viewport, plus `deviceScaleFactor: 2` for stills. Keep scripts and profiles in the worktree's gitignored `.t3/`.
+- **Desktop apps and games** (Flutter, Electron, Minecraft): capture the window by its title with ffmpeg, then use the GIF step below. Use the repo's own screenshot tooling instead when it has one.
+
+  ```sh
+  ffmpeg -f gdigrab -i title="Window Title" -frames:v 1 still.png
+  ffmpeg -f gdigrab -framerate 15 -i title="Window Title" -t 12 run.mp4
+  ```
 - **Before/after:** use the same build and swap only the fixed file back to the base version. `node --watch` restarts the server. Start a fresh thread for each run.
 - **Small changes:** crop the changed element from both stills and stack them with labels:
 
