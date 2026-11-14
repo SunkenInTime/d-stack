@@ -30,7 +30,7 @@ private language - words/phrases you made up mid-task that i've never heard. the
 
 ## Two-way doors swing freely
 
-I trust you with whole problems. Be ambitious: take the full scope, use as many subagents and workflows as the work needs, and carry it all the way to done.
+I trust you with whole problems. Be ambitious: take the full scope, feel free to use as many resources as the work requires, and carry it all the way to done.
 
 Walk through two-way doors and show me after. Stop at one-way doors; If my answer would be a rubber stamp, don't ask. If running something could answer the question, run it instead. Save questions for taste and product calls only I can make, one at a time, with your recommendation & the built in question tool in your harness. If your honest answer is no (don't build it, it isn't worth it, I'm wrong), say so.
 
