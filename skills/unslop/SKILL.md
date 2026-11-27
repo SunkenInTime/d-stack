@@ -1,6 +1,6 @@
 ---
 name: unslop
-description: Cut AI tells from any writing. Must always apply.
+description: Cut AI tells from human-facing writing (public posts, site copy, docs, PR descriptions, replies). Do not load for internal agent-to-agent notes or code review handoffs.
 ---
 
 # Unslop

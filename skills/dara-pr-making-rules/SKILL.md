@@ -3,9 +3,15 @@ name: dara-pr-making-rules
 description: How Dara's PRs get made, from first repro to merged. Use when a fix or change will become a PR, when opening or updating a PR, writing its description, or babysitting CI and review bots.
 ---
 
-A PR is done when I'd let you merge it without reading the diff. The words below build on the ones in the global file (ground truth, raison d'être, drive-by, verschlimmbessern, hearsay).
+A PR is done when I'd let you merge it without reading the diff. Builds on `ground truth` from the global file.
 
 ## Leading words
+
+raison d'être - why this PR exists, from the user's side. one or two sentences.
+
+drive-by - a change slipped into a PR that isn't its raison d'être. no drive-bys.
+
+verschlimmbessern - making it worse by improving it. bandaid fixes that lead to even more bugs.
 
 repro - the bug happening in front of you, on the surface where users hit it. not a theory of the bug.
 
@@ -23,7 +29,7 @@ Get a repro before you edit. If it won't happen, force it: synthesize the trigge
 
 ## Root, not symptom
 
-Smallest diff that fixes the cause. A fix that grows every review round is treating symptoms; that's verschlimmbessern, step back and find the layer where the problem lives.
+Smallest diff that fixes the cause. A fix that grows every review round is verschlimmbessern — step back to the layer where the problem lives.
 
 ## Ground truth by what the user meets
 
@@ -42,7 +48,7 @@ A unit test alone isn't ground truth for a bug someone saw at runtime. Capture a
 
 ## Second eyes
 
-Beyond a small fix, have Astra review through T3's `delegate_task`. Ask for blockers first (breaks or loses work under normal use), then tautologies, then style. Its findings are hearsay until you've looked: fix, consider or dismiss each. Three rounds finding the same family of bug means the design is wrong.
+Beyond a small fix, have Sol (`gpt-6.2-sol`, reasoning `xhigh`) review through T3's `delegate_task`. Ask for blockers first (breaks or loses work under normal use), then tautologies, then style. Verify its findings in the code yourself before changing anything: fix, consider, or dismiss each. Three rounds finding the same family of bug means the design is wrong.
 
 ## The description
 
@@ -50,4 +56,4 @@ Readers skim. Lede first: the body opens with the picture or GIF, or one line on
 
 ## See it through
 
-Every push restarts CI, so batch fixes into one push per round. Watch checks in the background (`gh pr checks <PR> --watch --fail-fast`; restart it if it sees no checks right after a push) and keep working meanwhile. Bots catch real bugs and also file noise; a stuck or rate-limited bot doesn't get to hold the PR hostage. In my repos (ones I own or maintain), merge once checks pass, review bots have reported, the review is clean and you've reached ground truth, and recheck that it still merges after a sibling lands. In repos we don't own, merge only where their AGENTS.md says agents merge; otherwise leave it for the maintainers.
+Every push restarts CI, so batch fixes into one push per round. Use T3's `watch_pull_request` to monitor checks and review bots (only fall back to `gh pr checks` outside T3). Bots catch real bugs and also file noise; a stuck or rate-limited bot doesn't get to hold the PR hostage. In my repos (ones I own or maintain), merge once checks pass, review bots have reported, the review is clean, and you've reached ground truth — recheck that it still merges after a sibling lands, and close issues fixed by merged PRs (linking the PR or release) without asking. In repos we don't own, merge only where their AGENTS.md says agents merge; otherwise leave it for the maintainers.

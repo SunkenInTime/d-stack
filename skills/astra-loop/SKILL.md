@@ -1,11 +1,11 @@
 ---
 name: astra-loop
-description: Settle a contested design, decision or output by going rounds with a second model until you converge. Use when I push back on where you landed, when I say to loop or go back and forth with Astra, or when a call is close enough to deserve an argument.
+description: Settle a contested design, decision or output by going rounds with a second model until you converge. Use when I push back on where you landed, when I say to loop or go back and forth with Sol or Astra, or when a call is close enough to deserve an argument.
 ---
 
 When I don't agree with where a model landed, I take it to another model and go back and forth until they converge. That usually gets me the best answer. This is that loop, run by you instead of me.
 
-The second model is Astra (`gpt-6-astra`, reasoning `high`, through T3's `delegate_task`) if you're Claude, and Opus (`claude-opus-5-5`, same tool) if you're Astra. Different models have different blind spots; that difference is the point.
+The second model is Sol (`gpt-6.2-sol`, reasoning `xhigh`, through T3's `delegate_task`) if you're Claude, and Opus (`claude-opus-5-5`, same tool) if you're Sol/Astra. Different models have different blind spots; that difference is the point.
 
 ## The loop
 

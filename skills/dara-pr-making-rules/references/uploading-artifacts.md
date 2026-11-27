@@ -4,8 +4,14 @@
 
 Dara's account has read-only access to `pingdotgg/t3code`, so `gh --attach` fails there. Upload each file with the `upload-to-r2` skill and embed the returned URL in the PR body with `--body-file`:
 
+Linux / macOS (including `t3os`):
+```bash
+python3 "$HOME/.agents/skills/upload-to-r2/scripts/upload.py" --prefix "<pr-topic>" "/path/to/before.png"
+```
+
+Windows PowerShell:
 ```powershell
-python "$env:USERPROFILE\.codex\skills\upload-to-r2\scripts\upload.py" --prefix "<pr-topic>" "E:\path\to\before.png"
+python "$env:USERPROFILE\.agents\skills\upload-to-r2\scripts\upload.py" --prefix "<pr-topic>" "E:\path\to\before.png"
 ```
 
 GitHub renders images and GIFs from these URLs inline. It does not inline an external MP4, so use a GIF for anything that has to play in the PR body, and link the MP4 only as a higher-quality extra.
